@@ -37,12 +37,15 @@ public class RecipeUI {
                 switch (choice) {
                     case "1":
                         // 設問1: 一覧表示機能
+                        displayRecipes();
                         break;
                     case "2":
                         // 設問2: 新規登録機能
+                        addNewRecipe();
                         break;
                     case "3":
                         // 設問3: 検索機能
+                        searchRecipe();
                         break;
                     case "4":
                         System.out.println("Exit the application.");
@@ -62,7 +65,25 @@ public class RecipeUI {
      * RecipeFileHandlerから読み込んだレシピデータを整形してコンソールに表示します。
      */
     private void displayRecipes() {
-
+        ArrayList<String> lists = new ArrayList<>();
+        // 料理のリスト
+        lists = fileHandler.readRecipes();
+        System.out.println("Recipes:");
+        System.out.println("-----------------------------------");
+        for (String list : lists) {
+            String[] recipeMenu = list.split(",");
+            System.out.println("Recipe Name: " + recipeMenu[0]);
+            System.out.print("Main Ingredients: ");
+            for (int i = 1; i < recipeMenu.length; i++) {
+                if (i == recipeMenu.length - 1) {
+                    System.out.print(recipeMenu[i]);
+                } else {
+                    System.out.print(recipeMenu[i] + ",");
+                }
+            }
+            System.out.println();
+            System.out.println("-----------------------------------");
+        }
     }
 
     /**
@@ -73,6 +94,13 @@ public class RecipeUI {
      */
     private void addNewRecipe() throws IOException {
 
+        System.out.println("Enter recipe name: ");
+        String recipeName = reader.readLine();
+        
+        System.out.println("Enter main ingredients (comma separated): ");
+        String ingredients = reader.readLine();
+
+        fileHandler.addRecipe(recipeName, ingredients);
     }
 
     /**
@@ -82,7 +110,26 @@ public class RecipeUI {
      * @throws java.io.IOException 入出力が受け付けられない
      */
     private void searchRecipe() throws IOException {
+        System.out.print("Enter search query (e.g., 'name=Tomato&ingredient=Garlic'): ");
+        String query = reader.readLine();
+        String name;
+        String ingredient;
 
+        // 検索クエリの書き方が正しい場合(nameかingredientのキーがある場合)
+        if (query.substring(0, 4).equals("name=")) {
+            // name=から&ingredient=まで取得
+            name = query.substring(4, query.indexOf("&") - 1);
+        }
+
+        if (query.substring(query.indexOf("&"), query.indexOf("&") + 11).equals("&ingredient=")) {
+            // &ingredient=以降を取得
+            ingredient = query.substring(query.indexOf("&") + 12);
+        }
+
+        // レシピ一覧を取得して比較
+        // 料理のリスト
+        ArrayList<String> lists = new ArrayList<>();
+        lists = fileHandler.readRecipes();
     }
 
 }

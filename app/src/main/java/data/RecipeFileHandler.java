@@ -1,5 +1,9 @@
 package data;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -22,11 +26,23 @@ public class RecipeFileHandler {
      * @return レシピデータ
      */
     public ArrayList<String> readRecipes() {
-        // try {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            String line;
+            ArrayList<String> lists = new ArrayList<>();
+            while ((line = reader.readLine()) != null) {
+                lists.add(line);
+            }
+            reader.close();
 
-        // } catch (IOException e) {
-        //     System.out.println("Error reading file:" + e.getMessage());
-        // }
+            if (lists.isEmpty()) {
+                throw new IOException("No recipes available.");
+            }
+
+            return lists;
+        } catch (IOException e) {
+            System.out.println("Error reading file:" + e.getMessage());
+        }
         return null;
     }
 
@@ -40,10 +56,17 @@ public class RecipeFileHandler {
      */
      // 
     public void addRecipe(String recipeName, String ingredients) {
-        // try {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
+            // 具材
+            String newIngredientsArr[] = ingredients.split(",");
+            String newIngredient = String.join(", ", newIngredientsArr);
 
-        // } catch (IOException e) {
-
-        // }
+            writer.write(recipeName + "," + newIngredient);
+            writer.newLine();
+            writer.close();
+            System.out.println("Recipe added successfully.");
+        } catch (IOException e) {
+            System.out.println("Error reading file:" + e.getMessage());
+        }
     }
 }
